@@ -6,3 +6,4 @@
 - go backend using R-tree or better R*-tree cause fast
 - App und Web in flutter cause 3-in-1
 - later user can connect via near-bluetooth
+- maybe later 1 infrastructure project with "just" command runner to build it in Kubernetes with multiple pods and also pipelines to build the images and run tests...
