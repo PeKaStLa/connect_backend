@@ -25,6 +25,7 @@ type User struct {
 	Username string `json:"username"`
 	Phone    string `json:"phone"`
 	Email    string `json:"email"`
+	Location string `json:"location"` // Added Location field
 }
 
 var users []User // Slice to store users
@@ -117,9 +118,9 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Basic validation
-	if newUser.Username == "" || newUser.Email == "" || newUser.Phone == "" {
-		http.Error(w, "Username, Phone and Email are required", http.StatusBadRequest)
+	// Basic validation - Note: Location is not currently required here
+	if newUser.Username == "" || newUser.Email == "" || newUser.Phone == "" || newUser.Location == "" {
+		http.Error(w, "Username, Phone, Location and Email are required", http.StatusBadRequest)
 		return
 	}
 
@@ -140,17 +141,17 @@ func main() {
 	areas = append(areas, Area{ID: 2, Name: "Sydney", Location: "-33.837386, 151.059379"})
 	areas = append(areas, Area{ID: 3, Name: "Melbourne", Location: "-37.822437, 145.011258"})
 
-	// Add some dummy user data to start with
-	users = append(users, User{ID: 1, Username: "alice", Email: "alice@example.com", Phone: "0488079008"})
-	users = append(users, User{ID: 2, Username: "bob", Email: "bob@example.com", Phone: "0488079009"})
+	// Add some dummy user data to start with (including Location)
+	users = append(users, User{ID: 1, Username: "alice", Email: "alice@example.com", Phone: "0488079008", Location: "-37.8136, 144.9631"}) // Example Melbourne location
+	users = append(users, User{ID: 2, Username: "bob", Email: "bob@example.com", Phone: "0488079009", Location: "-33.8688, 151.2093"})     // Example Sydney location
 
 	// Initialize the router
 	r := mux.NewRouter()
 
 	// Define the area endpoints
-	r.HandleFunc("/areas", getAreas).Methods("GET")
-	r.HandleFunc("/areas/{id}", getArea).Methods("GET")
-	r.HandleFunc("/areas", createArea).Methods("POST")
+	r.HandleFunc("/areas", getAreas).Methods("GET")     // Get all areas
+	r.HandleFunc("/areas/{id}", getArea).Methods("GET") // Get specific area
+	r.HandleFunc("/areas", createArea).Methods("POST")  // Create a new area
 
 	// Define the user endpoints
 	r.HandleFunc("/users", getUsers).Methods("GET")     // Get all users
