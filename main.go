@@ -133,6 +133,31 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newUser) // Return the created user (with ID)
 }
 
+// Get a user's location by ID
+func getUserLocation(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	// Find the user with the given id
+	for _, user := range users {
+		if user.ID == id {
+			// Found the user, return only the location
+			// We can return it as plain text or simple JSON. Let's use JSON for consistency.
+			w.Header().Set("Content-Type", "application/json")
+			response := map[string]string{"location": user.Location} // Create a map for JSON structure
+			json.NewEncoder(w).Encode(response)
+			return // Found and sent location
+		}
+	}
+
+	// If loop completes, user was not found
+	http.Error(w, "User not found", http.StatusNotFound)
+}
+
 // --- Main Function ---
 
 func main() {
@@ -154,9 +179,10 @@ func main() {
 	r.HandleFunc("/areas", createArea).Methods("POST")  // Create a new area
 
 	// Define the user endpoints
-	r.HandleFunc("/users", getUsers).Methods("GET")     // Get all users
-	r.HandleFunc("/users/{id}", getUser).Methods("GET") // Get specific user
-	r.HandleFunc("/users", createUser).Methods("POST")  // Create a new user
+	r.HandleFunc("/users", getUsers).Methods("GET")                      // Get all users
+	r.HandleFunc("/users/{id}", getUser).Methods("GET")                  // Get specific user
+	r.HandleFunc("/users", createUser).Methods("POST")                   // Create a new user
+	r.HandleFunc("/users/{id}/location", getUserLocation).Methods("GET") // Get user's location
 
 	// Start the server
 	fmt.Println("Server is running on port 8000...")
