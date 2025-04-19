@@ -169,6 +169,7 @@ func main() {
 	// Add some dummy user data to start with (including Location)
 	users = append(users, User{ID: 1, Username: "alice", Email: "alice@example.com", Phone: "0488079008", Location: "-37.8136, 144.9631"}) // Example Melbourne location
 	users = append(users, User{ID: 2, Username: "bob", Email: "bob@example.com", Phone: "0488079009", Location: "-33.8688, 151.2093"})     // Example Sydney location
+	users = append(users, User{ID: 3, Username: "peter", Email: "peter@example.com", Phone: "0488079010", Location: "-11.8688, 222.2093"}) // Example some location
 
 	// Initialize the router
 	r := mux.NewRouter()
