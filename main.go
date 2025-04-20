@@ -145,10 +145,11 @@ func main() {
 	areas = append(areas, Area{ID: 4, Radius: "123", Name: "Test", Location: "-12.822437, 123.011258"})
 
 	// Add some dummy user data to start with (including Location)
-	users = append(users, User{ID: 1, Username: "alice", Email: "alice@example.com", Phone: "0488079008", Location: "-37.8136, 144.9631"}) // Example Melbourne location
-	users = append(users, User{ID: 2, Username: "bob", Email: "bob@example.com", Phone: "0488079009", Location: "-33.8688, 151.2093"})     // Example Sydney location
-	users = append(users, User{ID: 3, Username: "peter", Email: "peter@example.com", Phone: "0488079010", Location: "-11.8688, 222.2093"}) // Example some location
-	users = append(users, User{ID: 4, Username: "paul", Email: "paul@example.com", Phone: "0488079011", Location: "-123.8688, 234.2093"})  // Example some location
+	users = append(users, User{ID: 1, Username: "alice", Email: "alice@example.com", Phone: "0488079008", Location: "-37.8136, 144.9631"})  // Example Melbourne location
+	users = append(users, User{ID: 2, Username: "bob", Email: "bob@example.com", Phone: "0488079009", Location: "-33.8688, 151.2093"})      // Example Sydney location
+	users = append(users, User{ID: 3, Username: "peter", Email: "peter@example.com", Phone: "0488079010", Location: "-11.8688, 222.2093"})  // Example some location
+	users = append(users, User{ID: 4, Username: "paul", Email: "paul@example.com", Phone: "0488079011", Location: "-123.8688, 234.2093"})   // Example some location
+	users = append(users, User{ID: 5, Username: "daniel", Email: "daniel@example.com", Phone: "0488079012", Location: "-34.8688, 34.2093"}) // Example some location
 
 	// Initialize the router
 	r := mux.NewRouter()
