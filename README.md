@@ -1,6 +1,8 @@
 # connect_go_backend
 go backend for connect app
 
+run server with: go run main.go
+
 ## Plan:
 - Web-/App where everyone has an area in every location and can chat without making a group or exchanging number or usernames...
 - user can filter their area for male/female, age, verified

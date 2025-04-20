@@ -215,10 +215,9 @@ func main() {
 	r.HandleFunc("/areas", createArea).Methods("POST")  // Create a new area
 
 	// Define the user endpoints
-	r.HandleFunc("/users", getUsers).Methods("GET")     // Get all users
-	r.HandleFunc("/users/{id}", getUser).Methods("GET") // Get specific user
-	r.HandleFunc("/users", createUser).Methods("POST")  // Create a new user
-	// Add this line for updating user location:
+	r.HandleFunc("/users", getUsers).Methods("GET")                  // Get all users
+	r.HandleFunc("/users/{id}", getUser).Methods("GET")              // Get specific user
+	r.HandleFunc("/users", createUser).Methods("POST")               // Create a new user
 	r.HandleFunc("/users/{id}", updateUserLocation).Methods("PATCH") // Update user location
 
 	// Start the server
