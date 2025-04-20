@@ -142,6 +142,7 @@ func main() {
 	areas = append(areas, Area{ID: 1, Radius: "42", Name: "Brisbane", Location: "-27.492887, 153.055914"})
 	areas = append(areas, Area{ID: 2, Radius: "37", Name: "Sydney", Location: "-33.837386, 151.059379"})
 	areas = append(areas, Area{ID: 3, Radius: "53", Name: "Melbourne", Location: "-37.822437, 145.011258"})
+	areas = append(areas, Area{ID: 4, Radius: "123", Name: "Test", Location: "-12.822437, 123.011258"})
 
 	// Add some dummy user data to start with (including Location)
 	users = append(users, User{ID: 1, Username: "alice", Email: "alice@example.com", Phone: "0488079008", Location: "-37.8136, 144.9631"}) // Example Melbourne location
