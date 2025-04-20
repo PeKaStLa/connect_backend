@@ -135,6 +135,61 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newUser) // Return the created user (with ID)
 }
 
+// --- User Handlers ---
+
+// ... (keep existing getUsers, getUser, createUser functions) ...
+
+// Update a user's location
+func updateUserLocation(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	// Define a temporary struct to decode only the location from the request body
+	var locationUpdate struct {
+		Location string `json:"location"`
+	}
+
+	// Decode the request body into the temporary struct
+	err = json.NewDecoder(r.Body).Decode(&locationUpdate)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Validate that location was provided
+	if locationUpdate.Location == "" {
+		http.Error(w, "Location field is required in the request body", http.StatusBadRequest)
+		return
+	}
+
+	// Find the user and update their location
+	found := false
+	var updatedUser User   // To store the user data to return
+	for i := range users { // Iterate by index to modify the original slice element
+		if users[i].ID == id {
+			users[i].Location = locationUpdate.Location // Update the location
+			updatedUser = users[i]                      // Get the updated user data
+			found = true
+			break // Exit loop once found and updated
+		}
+	}
+
+	// Handle case where user was not found
+	if !found {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	// Respond with the updated user data
+	w.WriteHeader(http.StatusOK) // 200 OK
+	json.NewEncoder(w).Encode(updatedUser)
+}
+
 // --- Main Function ---
 
 func main() {
@@ -163,6 +218,8 @@ func main() {
 	r.HandleFunc("/users", getUsers).Methods("GET")     // Get all users
 	r.HandleFunc("/users/{id}", getUser).Methods("GET") // Get specific user
 	r.HandleFunc("/users", createUser).Methods("POST")  // Create a new user
+	// Add this line for updating user location:
+	r.HandleFunc("/users/{id}", updateUserLocation).Methods("PATCH") // Update user location
 
 	// Start the server
 	fmt.Println("Server is running on port 8000...")
