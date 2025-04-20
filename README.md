@@ -1,4 +1,6 @@
-# connect
+# connect_go_backend
+
+go backend for connect app
 
 ## Plan:
 - Web-/App where everyone has an area in every location and can chat without making a group or exchanging number or usernames...
