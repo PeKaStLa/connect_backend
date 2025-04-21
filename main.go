@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -15,19 +16,21 @@ type Area struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 	//Radius in Meter
-	Radius   string `json:"radius"`
-	Location string `json:"location"`
+	Radius    string `json:"radius"`
+	Latitude  string `json:"latitude"`
+	Longitude string `json:"longitude"`
 }
 
 var areas []Area
 
 // --- User Struct and Data ---
 type User struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	Phone    string `json:"phone"`
-	Email    string `json:"email"`
-	Location string `json:"location"` // Added Location field
+	ID        int    `json:"id"`
+	Username  string `json:"username"`
+	Phone     string `json:"phone"`
+	Email     string `json:"email"`
+	Latitude  string `json:"latitude"`
+	Longitude string `json:"longitude"`
 }
 
 var users []User // Slice to store users
@@ -68,7 +71,7 @@ func createArea(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if area.Location == "" || area.Name == "" || area.Radius == "" {
+	if area.Latitude == "" || area.Longitude == "" || area.Name == "" || area.Radius == "" {
 		http.Error(w, "Please provide a name and location", http.StatusBadRequest)
 		return
 	}
@@ -121,7 +124,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Basic validation
-	if newUser.Username == "" || newUser.Email == "" || newUser.Phone == "" || newUser.Location == "" {
+	if newUser.Username == "" || newUser.Email == "" || newUser.Phone == "" || newUser.Latitude == "" || newUser.Longitude == "" {
 		http.Error(w, "Username, Phone, Location and Email are required", http.StatusBadRequest)
 		return
 	}
@@ -139,7 +142,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 // ... (keep existing getUsers, getUser, createUser functions) ...
 
-// Update a user's location
+// Update a user's latitude and longitude
 func updateUserLocation(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
@@ -149,31 +152,53 @@ func updateUserLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Define a temporary struct to decode only the location from the request body
+	// Define a temporary struct to decode latitude and longitude from the request body
 	var locationUpdate struct {
-		Location string `json:"location"`
+		// Use pointers to string to differentiate between empty string and field not provided,
+		// although for PATCH requiring both might be simpler/intended here.
+		// If you *always* expect both, you can use string directly.
+		// Let's assume for this PATCH, both are required.
+		Latitude  string `json:"latitude"`
+		Longitude string `json:"longitude"`
 	}
 
 	// Decode the request body into the temporary struct
 	err = json.NewDecoder(r.Body).Decode(&locationUpdate)
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		// Check for EOF which means empty body, could be handled differently if needed
+		if err == io.EOF {
+			http.Error(w, "Request body cannot be empty", http.StatusBadRequest)
+		} else {
+			http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		}
 		return
 	}
 
-	// Validate that location was provided
-	if locationUpdate.Location == "" {
-		http.Error(w, "Location field is required in the request body", http.StatusBadRequest)
+	// Validate that both latitude and longitude were provided
+	// Note: This checks for empty strings. If "0" is a valid coordinate, this is fine.
+	if locationUpdate.Latitude == "" || locationUpdate.Longitude == "" {
+		http.Error(w, "Both latitude and longitude fields are required in the request body", http.StatusBadRequest)
 		return
 	}
 
-	// Find the user and update their location
+	// --- Optional: Add validation for coordinate format if needed ---
+	// Example (very basic, might need a regex or library for robust validation):
+	// _, errLat := strconv.ParseFloat(locationUpdate.Latitude, 64)
+	// _, errLon := strconv.ParseFloat(locationUpdate.Longitude, 64)
+	// if errLat != nil || errLon != nil {
+	//     http.Error(w, "Invalid format for latitude or longitude", http.StatusBadRequest)
+	//     return
+	// }
+	// --- End Optional Validation ---
+
+	// Find the user and update their location fields
 	found := false
 	var updatedUser User   // To store the user data to return
 	for i := range users { // Iterate by index to modify the original slice element
 		if users[i].ID == id {
-			users[i].Location = locationUpdate.Location // Update the location
-			updatedUser = users[i]                      // Get the updated user data
+			users[i].Latitude = locationUpdate.Latitude   // Update Latitude
+			users[i].Longitude = locationUpdate.Longitude // Update Longitude
+			updatedUser = users[i]                        // Get the updated user data
 			found = true
 			break // Exit loop once found and updated
 		}
@@ -194,17 +219,17 @@ func updateUserLocation(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Add some dummy data to start with
-	areas = append(areas, Area{ID: 1, Radius: "42", Name: "Brisbane", Location: "-27.492887, 153.055914"})
-	areas = append(areas, Area{ID: 2, Radius: "37", Name: "Sydney", Location: "-33.837386, 151.059379"})
-	areas = append(areas, Area{ID: 3, Radius: "53", Name: "Melbourne", Location: "-37.822437, 145.011258"})
-	areas = append(areas, Area{ID: 4, Radius: "123", Name: "Test", Location: "-12.822437, 123.011258"})
+	areas = append(areas, Area{ID: 1, Radius: "42", Name: "Brisbane", Latitude: "-27.492887", Longitude: "153.055914"})
+	areas = append(areas, Area{ID: 2, Radius: "37", Name: "Sydney", Latitude: "-33.837386", Longitude: "151.059379"})
+	areas = append(areas, Area{ID: 3, Radius: "53", Name: "Melbourne", Latitude: "-37.822437", Longitude: "145.011258"})
+	areas = append(areas, Area{ID: 4, Radius: "123", Name: "Test", Latitude: "-37.822437", Longitude: "145.011258"})
 
 	// Add some dummy user data to start with (including Location)
-	users = append(users, User{ID: 1, Username: "alice", Email: "alice@example.com", Phone: "0488079008", Location: "-37.8136, 144.9631"})  // Example Melbourne location
-	users = append(users, User{ID: 2, Username: "bob", Email: "bob@example.com", Phone: "0488079009", Location: "-33.8688, 151.2093"})      // Example Sydney location
-	users = append(users, User{ID: 3, Username: "peter", Email: "peter@example.com", Phone: "0488079010", Location: "-11.8688, 222.2093"})  // Example some location
-	users = append(users, User{ID: 4, Username: "paul", Email: "paul@example.com", Phone: "0488079011", Location: "-123.8688, 234.2093"})   // Example some location
-	users = append(users, User{ID: 5, Username: "daniel", Email: "daniel@example.com", Phone: "0488079012", Location: "-34.8688, 34.2093"}) // Example some location
+	users = append(users, User{ID: 1, Username: "alice", Email: "alice@example.com", Phone: "0488079008", Latitude: "-27.492887", Longitude: "153.055914"})   // Example Melbourne location
+	users = append(users, User{ID: 2, Username: "bob", Email: "bob@example.com", Phone: "0488079009", Latitude: "-33.837386", Longitude: "151.059379"})       // Example Sydney location
+	users = append(users, User{ID: 3, Username: "peter", Email: "peter@example.com", Phone: "0488079010", Latitude: "-37.822437", Longitude: "145.011258"})   // Example some location
+	users = append(users, User{ID: 4, Username: "paul", Email: "paul@example.com", Phone: "0488079011", Latitude: "-27.492887", Longitude: "153.055914"})     // Example some location
+	users = append(users, User{ID: 5, Username: "daniel", Email: "daniel@example.com", Phone: "0488079012", Latitude: "-37.822437", Longitude: "145.011258"}) // Example some location
 
 	// Initialize the router
 	r := mux.NewRouter()
@@ -222,5 +247,5 @@ func main() {
 
 	// Start the server
 	fmt.Println("Server is running on port 8000...")
-	log.Fatal(http.ListenAndServe("localhost:8000", r))
+	log.Fatal(http.ListenAndServe("127.0.0.1:8000", r))
 }
