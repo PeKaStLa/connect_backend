@@ -13,10 +13,9 @@ import (
 
 // --- Area Struct and Data ---
 type Area struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	//Radius in Meter
-	Radius    string `json:"radius"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Radius    string `json:"radius"` //Radius in Meter
 	Latitude  string `json:"latitude"`
 	Longitude string `json:"longitude"`
 }
@@ -247,5 +246,5 @@ func main() {
 
 	// Start the server
 	fmt.Println("Server is running on port 8000...")
-	log.Fatal(http.ListenAndServe("127.0.0.1:8000", r))
+	log.Fatal(http.ListenAndServe("localhost:8000", r))
 }
