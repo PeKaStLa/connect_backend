@@ -218,17 +218,16 @@ func updateUserLocation(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Add some dummy data to start with
-	areas = append(areas, Area{ID: 1, Radius: "42", Name: "Brisbane", Latitude: "-27.492887", Longitude: "153.055914"})
-	areas = append(areas, Area{ID: 2, Radius: "37", Name: "Sydney", Latitude: "-33.837386", Longitude: "151.059379"})
-	areas = append(areas, Area{ID: 3, Radius: "53", Name: "Melbourne", Latitude: "-37.822437", Longitude: "145.011258"})
-	areas = append(areas, Area{ID: 4, Radius: "123", Name: "Test", Latitude: "-37.822437", Longitude: "145.011258"})
+	areas = append(areas, Area{ID: 1, Radius: "42000", Name: "Brisbane", Latitude: "-27.492887", Longitude: "153.055914"})  // Melbourne
+	areas = append(areas, Area{ID: 2, Radius: "37000", Name: "Sydney", Latitude: "-33.837386", Longitude: "151.059379"})    // Sydney
+	areas = append(areas, Area{ID: 3, Radius: "53000", Name: "Melbourne", Latitude: "-37.822437", Longitude: "145.011258"}) // Brisbane
 
 	// Add some dummy user data to start with (including Location)
-	users = append(users, User{ID: 1, Username: "alice", Email: "alice@example.com", Phone: "0488079008", Latitude: "-27.492887", Longitude: "153.055914"})   // Example Melbourne location
-	users = append(users, User{ID: 2, Username: "bob", Email: "bob@example.com", Phone: "0488079009", Latitude: "-33.837386", Longitude: "151.059379"})       // Example Sydney location
-	users = append(users, User{ID: 3, Username: "peter", Email: "peter@example.com", Phone: "0488079010", Latitude: "-37.822437", Longitude: "145.011258"})   // Example some location
-	users = append(users, User{ID: 4, Username: "paul", Email: "paul@example.com", Phone: "0488079011", Latitude: "-27.492887", Longitude: "153.055914"})     // Example some location
-	users = append(users, User{ID: 5, Username: "daniel", Email: "daniel@example.com", Phone: "0488079012", Latitude: "-37.822437", Longitude: "145.011258"}) // Example some location
+	users = append(users, User{ID: 1, Username: "alice", Email: "alice@example.com", Phone: "0488079008", Latitude: "-27.492887", Longitude: "153.055914"}) // Melbourne
+	users = append(users, User{ID: 2, Username: "bob", Email: "bob@example.com", Phone: "0488079009", Latitude: "-33.8523", Longitude: "151.2108"})         // Sydney
+	users = append(users, User{ID: 3, Username: "peter", Email: "peter@example.com", Phone: "0488079010", Latitude: "-37.822437", Longitude: "145.011258"}) // Brisbane
+	users = append(users, User{ID: 4, Username: "paul", Email: "paul@example.com", Phone: "0488079011", Latitude: "-41.180557", Longitude: "146.346390"})   // Devonport
+	users = append(users, User{ID: 5, Username: "daniel", Email: "daniel@example.com", Phone: "0488079012", Latitude: "-42.8794", Longitude: "147.3294"})   // Hobart
 
 	// Initialize the router
 	r := mux.NewRouter()
