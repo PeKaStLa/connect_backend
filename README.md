@@ -19,5 +19,5 @@ run server with: go run main.go
 - go backend using R-tree or better R*-tree cause fast
 - ...
 - frontend Apps und Web in flutter cause 3-in-1
-- backend with go and supabase (inclusive authentication and postgresDB)
+- backend with go and free (go) PocketBase backend (including authentication, subscriptions, SQLite and File-storage)
 - for infra use "just" command runner and free OKD (OpenShift cluster inclusive cicd and dev tools)
